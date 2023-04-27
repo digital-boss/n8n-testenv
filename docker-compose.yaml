@@ -1,0 +1,63 @@
+version: '3.3'
+services:
+  n8n:
+    build: .
+    image: n8n-testenv
+    container_name: n8n
+    depends_on:
+      - db
+      - mitm
+    environment:
+      - N8N_ENCRYPTION_KEY
+      - DB_TYPE
+      - DB_MYSQLDB_DATABASE
+      - DB_MYSQLDB_HOST
+      - DB_MYSQLDB_PORT
+      - DB_MYSQLDB_USER
+      - DB_MYSQLDB_PASSWORD
+      - NODE_FUNCTION_ALLOW_BUILTIN
+      # - N8N_SMTP_HOST
+      # - N8N_SMTP_PORT
+      # - N8N_SMTP_USER
+      # - N8N_SMTP_PASS
+      - http_proxy=http://mitm:8080
+      - https_proxy=https://mitm:8080
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+    ports:
+      - 5678:5678
+    volumes:
+      - n8n:/home/node
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "512m"
+    restart: unless-stopped
+
+  db:
+    image: mysql
+    container_name: n8n_mysql
+    restart: always
+    volumes:
+      - db_data:/var/lib/mysql
+      - db_logs:/var/log/mysql
+      - db_conf:/etc/mysql/conf.d
+    environment:
+      - MYSQL_PASSWORD=$DB_MYSQLDB_PASSWORD
+      - MYSQL_USER=$DB_MYSQLDB_USER
+      - MYSQL_DATABASE=$DB_MYSQLDB_DATABASE
+      - MYSQL_ROOT_PASSWORD
+
+  mitm:
+    image: mitmproxy/mitmproxy
+    container_name: mitmweb
+    tty: true
+    ports:
+      - 8080:8080
+      - 8081:8081
+    command: mitmweb --web-host 0.0.0.0 --verbose
+
+volumes:
+  n8n:
+  db_data:
+  db_logs:
+  db_conf:
