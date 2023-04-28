@@ -2,7 +2,7 @@ version: '3.3'
 services:
   n8n:
     build: .
-    image: n8n-testenv
+    image: n8n-testenv:latest
     container_name: n8n
     depends_on:
       - db
@@ -15,7 +15,6 @@ services:
       - DB_MYSQLDB_PORT
       - DB_MYSQLDB_USER
       - DB_MYSQLDB_PASSWORD
-      - NODE_FUNCTION_ALLOW_BUILTIN
       # - N8N_SMTP_HOST
       # - N8N_SMTP_PORT
       # - N8N_SMTP_USER
