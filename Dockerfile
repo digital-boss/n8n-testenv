@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN apk update && \
     apk add git && \
-    git clone https://github.com/perseus-algol/n8n.git . && \
+    git clone --depth 1 https://github.com/perseus-algol/n8n.git . && \
     git config --global --add safe.directory /app && \
     git checkout --track origin/n8n-nodes-crowd && \
     npm install -g pnpm && \
